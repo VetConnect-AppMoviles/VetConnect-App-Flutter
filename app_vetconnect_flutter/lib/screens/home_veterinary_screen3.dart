@@ -1,6 +1,6 @@
-import 'package:app_vetconnect_flutter/extra/home_veterinary_appbar.dart';
-import 'package:app_vetconnect_flutter/extra/service_information_card.dart';
-import 'package:app_vetconnect_flutter/extra/vet_clinic_card.dart';
+import 'package:app_vetconnect_flutter/widgets/home_veterinary_appbar.dart';
+import 'package:app_vetconnect_flutter/widgets/service_information_card.dart';
+import 'package:app_vetconnect_flutter/widgets/vet_clinic_card.dart';
 import 'package:flutter/material.dart';
 // Importar tus componentes
 

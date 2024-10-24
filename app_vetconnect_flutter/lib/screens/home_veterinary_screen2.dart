@@ -1,9 +1,9 @@
-import 'package:app_vetconnect_flutter/extra/home_veterinary_appbar.dart';
-import 'package:app_vetconnect_flutter/extra/home_veterinary_buttons.dart';
-import 'package:app_vetconnect_flutter/extra/vet_clinic_card.dart';
-import 'package:app_vetconnect_flutter/extra/veterinary_description.dart';
-import 'package:app_vetconnect_flutter/extra/veterinary_opiniones.dart';
-import 'package:app_vetconnect_flutter/extra/veterinary_services.dart';
+import 'package:app_vetconnect_flutter/widgets/home_veterinary_appbar.dart';
+import 'package:app_vetconnect_flutter/widgets/home_veterinary_buttons.dart';
+import 'package:app_vetconnect_flutter/widgets/vet_clinic_card.dart';
+import 'package:app_vetconnect_flutter/widgets/veterinary_description.dart';
+import 'package:app_vetconnect_flutter/widgets/veterinary_opiniones.dart';
+import 'package:app_vetconnect_flutter/widgets/veterinary_services.dart';
 import 'package:flutter/material.dart';
 
 // Asegúrate de importar los widgets que creaste

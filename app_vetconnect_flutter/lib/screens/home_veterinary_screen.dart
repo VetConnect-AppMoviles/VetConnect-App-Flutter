@@ -1,8 +1,8 @@
-import 'package:app_vetconnect_flutter/extra/home_veterinary_buttons.dart';
-import 'package:app_vetconnect_flutter/extra/schedule_clinic_card.dart';
-import 'package:app_vetconnect_flutter/extra/vet_clinic_card.dart';
+import 'package:app_vetconnect_flutter/widgets/home_veterinary_buttons.dart';
+import 'package:app_vetconnect_flutter/widgets/schedule_clinic_card.dart';
+import 'package:app_vetconnect_flutter/widgets/vet_clinic_card.dart';
 import 'package:flutter/material.dart';
-import 'package:app_vetconnect_flutter/extra/home_veterinary_appbar.dart';
+import 'package:app_vetconnect_flutter/widgets/home_veterinary_appbar.dart';
 
 class HomeVeterinaryScreen extends StatefulWidget {
   @override

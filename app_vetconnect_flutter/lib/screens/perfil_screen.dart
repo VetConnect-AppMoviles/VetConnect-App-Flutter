@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const Perfil());
+  runApp(const PerfilScreen());
 }
 
-class Perfil extends StatelessWidget {
-  const Perfil({super.key});
+class PerfilScreen extends StatelessWidget {
+  const PerfilScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

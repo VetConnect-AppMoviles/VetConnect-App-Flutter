@@ -1,4 +1,4 @@
-import 'package:app_vetconnect_flutter/extra/home_veterinary_appbar.dart';
+import 'package:app_vetconnect_flutter/widgets/home_veterinary_appbar.dart';
 import 'package:flutter/material.dart';
 
 class VeterinaryConfig extends StatelessWidget {
