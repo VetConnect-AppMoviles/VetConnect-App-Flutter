@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'add_service_screen.dart'; // Asegúrate de que este archivo exista.
 
 void main() {
@@ -11,7 +13,7 @@ class ConfigPerfilEmpresaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // Eliminar banner de depuración.
+      debugShowCheckedModeBanner: false,
       home: const HomeScreen(),
     );
   }
@@ -20,27 +22,58 @@ class ConfigPerfilEmpresaApp extends StatelessWidget {
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  Future<Map<String, dynamic>> fetchUserData() async {
+    const url = 'https://my-json-server.typicode.com/RodrLH/vetconnect-jsonserver/db';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final user = (data['users'] as List).firstWhere((u) => u['id'] == 1);
+      return user;
+    } else {
+      throw Exception('Error al cargar los datos del usuario.');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFEF1DE),
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 20),
-                _buildProfileSection(),
-                const SizedBox(height: 20),
-                _buildServiceTable(),
-                const SizedBox(height: 20),
-                _buildImageGallery(),
-                const SizedBox(height: 20),
-                _buildButtons(context),
-              ],
-            ),
-          ),
+        child: FutureBuilder<Map<String, dynamic>>(
+          future: fetchUserData(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData) {
+              return const Center(child: Text('No se encontraron datos.'));
+            } else {
+              final user = snapshot.data!;
+              return _buildContent(context, user);
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, Map<String, dynamic> user) {
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 20),
+            _buildProfileSection(user),
+            const SizedBox(height: 20),
+            _buildServiceTable(),
+            const SizedBox(height: 20),
+            _buildImageGallery(),
+            const SizedBox(height: 20),
+            _buildButtons(context),
+          ],
         ),
       ),
     );
@@ -69,7 +102,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileSection() {
+  Widget _buildProfileSection(Map<String, dynamic> user) {
     return Container(
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -79,7 +112,7 @@ class HomeScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          CircleAvatar(
+          const CircleAvatar(
             radius: 60,
             backgroundImage: AssetImage('assets/profile.png'),
           ),
@@ -92,19 +125,21 @@ class HomeScreen extends StatelessWidget {
             child: const Text('Upload'),
           ),
           const SizedBox(height: 10),
-          _buildTextField('Address'),
-          _buildTextField('Password', obscureText: true),
-          _buildTextField('Mobile Number'),
+          _buildTextField('Address', initialValue: user['email']),
+          _buildTextField('Password', obscureText: true, initialValue: user['password']),
+          _buildTextField('Mobile Number', initialValue: user['phone'].toString()),
+          _buildTextField('RUC', initialValue: user['ruc'].toString()),
         ],
       ),
     );
   }
 
-  Widget _buildTextField(String label, {bool obscureText = false}) {
+  Widget _buildTextField(String label, {String? initialValue, bool obscureText = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextField(
         obscureText: obscureText,
+        controller: TextEditingController(text: initialValue),
         decoration: InputDecoration(
           labelText: label,
           suffixIcon: const Icon(Icons.edit, color: Color(0xFF90FBD4)),
@@ -120,7 +155,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildServiceTable() {
     return DataTable(
-      headingRowColor: MaterialStateColor.resolveWith((states) => const Color(0xFF30B9B1)),
+      headingRowColor: MaterialStateProperty.resolveWith((states) => const Color(0xFF30B9B1)),
       columns: const [
         DataColumn(label: Text('Service Name')),
         DataColumn(label: Text('Price')),
