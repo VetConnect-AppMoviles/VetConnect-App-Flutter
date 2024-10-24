@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(const Perfil());
+  runApp(const PerfilScreen());
 }
 
-class Perfil extends StatelessWidget {
-  const Perfil({super.key});
+class PerfilScreen extends StatelessWidget {
+  const PerfilScreen({super.key});
 
   Future<Map<String, dynamic>> fetchUserData() async {
     const url = 'https://my-json-server.typicode.com/RodrLH/vetconnect-jsonserver/db';
