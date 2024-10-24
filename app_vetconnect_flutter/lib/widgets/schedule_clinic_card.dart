@@ -98,8 +98,10 @@ class TimeSlot extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+Widget build(BuildContext context) {
+  return GestureDetector(
+    onTap: isAvailable ? () => Navigator.pushNamed(context, '/home3') : null,
+    child: Container(
       alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(
           vertical: 4.0), // Reducir el padding vertical
@@ -121,8 +123,8 @@ class TimeSlot extends StatelessWidget {
           color: isAvailable ? Colors.teal : Colors.grey,
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
 void main() {
@@ -133,4 +135,5 @@ void main() {
       ),
     ),
   ));
+}
 }

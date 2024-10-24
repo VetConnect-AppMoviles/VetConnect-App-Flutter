@@ -105,7 +105,7 @@ class ServiceInformationCard extends StatelessWidget {
           // Botón de confirmación
           ElevatedButton(
             onPressed: () {
-              // Acción para confirmar
+              Navigator.pushNamed(context, '/payment');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal,
