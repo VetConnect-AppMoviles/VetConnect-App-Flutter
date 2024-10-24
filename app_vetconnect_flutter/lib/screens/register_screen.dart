@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../widgets/custom_text_field.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -8,13 +10,64 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController dniController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController dniController = TextEditingController();
+  final TextEditingController rucController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
 
   bool isClientSelected = true;
+
+  Future<void> _registerUser() async {
+    if (nameController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        confirmPasswordController.text.isEmpty ||
+        phoneController.text.isEmpty ||
+        (isClientSelected && dniController.text.isEmpty) ||
+        (!isClientSelected && rucController.text.isEmpty)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
+
+    if (passwordController.text != confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
+
+    final String role = isClientSelected ? 'pet-owner' : 'vet-center';
+    final Map<String, dynamic> userData = {
+      'name': nameController.text,
+      'email': emailController.text,
+      'password': passwordController.text, // In a real app, hash the password
+      'phone': phoneController.text,
+      'roles': [role],
+    };
+
+    if (isClientSelected) {
+      userData['dni'] = dniController.text;
+    } else {
+      userData['ruc'] = rucController.text;
+    }
+
+    final response = await http.post(
+      Uri.parse('https://my-json-server.typicode.com/RodrLH/vetconnect-jsonserver/users'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(userData),
+    );
+
+    if (response.statusCode == 201) {
+      print('User Registered: ${nameController.text}');
+      Navigator.pushNamed(context, '/home');
+    } else {
+      print('Failed to register user');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +108,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                // Formulario de registro
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -90,7 +142,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      // Botones de Cliente/Empresa
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -146,7 +197,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      // Campos del formulario
                       Row(
                         children: [
                           Expanded(
@@ -155,14 +205,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           const SizedBox(width: 16),
                           Expanded(
-                            child: CustomTextField(
-                                label: 'DNI', controller: dniController),
+                            child: isClientSelected
+                                ? CustomTextField(
+                                label: 'DNI', controller: dniController)
+                                : CustomTextField(
+                                label: 'RUC', controller: rucController),
                           ),
                         ],
                       ),
                       const SizedBox(height: 16),
                       CustomTextField(
                           label: 'Email', controller: emailController),
+                      const SizedBox(height: 16),
+                      CustomTextField(
+                          label: 'Phone', controller: phoneController),
                       const SizedBox(height: 16),
                       CustomTextField(
                         label: 'Password',
@@ -176,16 +232,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         obscureText: true,
                       ),
                       const SizedBox(height: 32),
-                      // Botón de Crear cuenta
                       ElevatedButton(
-                        onPressed: () {
-                          // Lógica de registro
-                          print('User Registered: ${nameController.text}');
-                          Navigator.pushNamed(context, '/home');
-                        },
+                        onPressed: _registerUser,
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                              const Color(0xFF67DBBE), // Verde claro
+                          const Color(0xFF67DBBE), // Verde claro
                           padding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 25),
                           shape: RoundedRectangleBorder(
@@ -200,19 +251,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('¿Ya tienes una cuenta? '),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/');
+                            },
+                            child: const Text(
+                              'Iniciar Sesión',
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                color: Color(0xFF193D30),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Imagen inferior con texto
                 Padding(
                   padding:
-                      const EdgeInsets.only(left: 20), // Padding a la izquierda
+                  const EdgeInsets.only(left: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Image.asset('assets/images/pets.png',
-                          height: 200), // Imagen a la izquierda
+                          height: 200),
                     ],
                   ),
                 ),
