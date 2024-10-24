@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../widgets/custom_text_field.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -6,6 +8,32 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController passwordController = TextEditingController();
 
   LoginScreen({super.key});
+
+  Future<void> _loginUser(BuildContext context) async {
+    final String email = emailController.text;
+    final String password = passwordController.text;
+
+    final response = await http.get(
+      Uri.parse('http://localhost:3000/users'),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> users = json.decode(response.body);
+      final user = users.firstWhere(
+            (user) => user['email'] == email && user['password'] == password,
+        orElse: () => null,
+      );
+
+      if (user != null) {
+        print('Login Successful: ${user['name']}');
+        Navigator.pushNamed(context, '/home');
+      } else {
+        print('Invalid email or password');
+      }
+    } else {
+      print('Failed to fetch users');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,15 +121,12 @@ class LoginScreen extends StatelessWidget {
                         obscureText: true,
                       ),
                       const SizedBox(height: 32),
-                      // Botón de Crear cuenta
+                      // Botón de Ingresar
                       ElevatedButton(
-                        onPressed: () {
-                          // Lógica de registro
-                          Navigator.pushNamed(context, '/home');
-                        },
+                        onPressed: () => _loginUser(context),
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                              const Color(0xFF67DBBE), // Verde claro
+                          const Color(0xFF67DBBE), // Verde claro
                           padding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 25),
                           shape: RoundedRectangleBorder(
@@ -116,6 +141,25 @@ class LoginScreen extends StatelessWidget {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('¿No tienes una cuenta? '),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/register');
+                            },
+                            child: const Text(
+                              'Registrarse',
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                color: Color(0xFF193D30),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -124,7 +168,7 @@ class LoginScreen extends StatelessWidget {
                 Column(
                   children: [
                     Image.asset('assets/images/dog.png',
-                        height: 230), // Imagen inferior
+                        height: 230),
                   ],
                 ),
               ],
