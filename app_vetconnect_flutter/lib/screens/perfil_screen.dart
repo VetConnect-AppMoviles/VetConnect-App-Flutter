@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(const PerfilScreen());
+  runApp(const Perfil());
 }
 
-class PerfilScreen extends StatelessWidget {
-  const PerfilScreen({super.key});
+class Perfil extends StatelessWidget {
+  const Perfil({super.key});
+
+  Future<Map<String, dynamic>> fetchUserData() async {
+    const url = 'https://my-json-server.typicode.com/RodrLH/vetconnect-jsonserver/db';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final user = (data['users'] as List).firstWhere((u) => u['id'] == 2);
+      return user;
+    } else {
+      throw Exception('Error al cargar datos del usuario.');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +54,19 @@ class PerfilScreen extends StatelessWidget {
               ),
             ),
             SliverFillRemaining(
-              child: _buildContent(),
+              child: FutureBuilder<Map<String, dynamic>>(
+                future: fetchUserData(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else {
+                    final user = snapshot.data!;
+                    return _buildContent(user);
+                  }
+                },
+              ),
             ),
           ],
         ),
@@ -47,13 +74,13 @@ class PerfilScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(Map<String, dynamic> user) {
     return Center(
       child: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 20),
-            _buildProfileSection(),
+            _buildProfileSection(user),
             const SizedBox(height: 30),
             _buildSaveButton(),
           ],
@@ -62,7 +89,7 @@ class PerfilScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileSection() {
+  Widget _buildProfileSection(Map<String, dynamic> user) {
     return Container(
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -72,7 +99,7 @@ class PerfilScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          CircleAvatar(
+          const CircleAvatar(
             radius: 60,
             backgroundImage: AssetImage('assets/profile.png'),
           ),
@@ -85,19 +112,20 @@ class PerfilScreen extends StatelessWidget {
             child: const Text('Upload'),
           ),
           const SizedBox(height: 20),
-          _buildTextField('Address'),
-          _buildTextField('Password', obscureText: true),
-          _buildTextField('Mobile Number'),
+          _buildTextField('Address', initialValue: user['email']),
+          _buildTextField('Password', obscureText: true, initialValue: user['password']),
+          _buildTextField('Mobile Number', initialValue: user['phone'].toString()),
         ],
       ),
     );
   }
 
-  Widget _buildTextField(String label, {bool obscureText = false}) {
+  Widget _buildTextField(String label, {String? initialValue, bool obscureText = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextField(
         obscureText: obscureText,
+        controller: TextEditingController(text: initialValue),
         decoration: InputDecoration(
           labelText: label,
           suffixIcon: const Icon(Icons.edit, color: Color(0xFF90FBD4)),
