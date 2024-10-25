@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class VeterinaryServices extends StatelessWidget {
-  const VeterinaryServices({super.key});
+  final List<dynamic> services;
+
+  const VeterinaryServices({super.key, required this.services});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 390, // Ajusta el ancho de tu contenedor
+      width: double.infinity,
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -31,25 +33,18 @@ class VeterinaryServices extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-
-          // Servicios en varias columnas con un Wrap
-          Wrap(
-            spacing: 16.0, // Espacio horizontal entre columnas
-            runSpacing: 8.0, // Espacio vertical entre filas
-            children: List.generate(6, (index) {
-              return SizedBox(
-                width:
-                150, // Ajusta el ancho de cada servicio para que se alineen en columnas
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text('Service #1', style: TextStyle(fontSize: 16)),
-                    Text('S/. 60', style: TextStyle(fontSize: 16)),
-                  ],
-                ),
-              );
-            }),
-          ),
+          ...services.map((service) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(service['name'], style: const TextStyle(fontSize: 16)),
+                  Text('S/. ${service['price']}', style: const TextStyle(fontSize: 16)),
+                ],
+              ),
+            );
+          }).toList(),
         ],
       ),
     );
