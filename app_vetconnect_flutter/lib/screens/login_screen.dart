@@ -14,7 +14,7 @@ class LoginScreen extends StatelessWidget {
     final String password = passwordController.text;
 
     final response = await http.get(
-      Uri.parse('http://localhost:3000/users'),
+      Uri.parse('https://my-json-server.typicode.com/RodrLH/vetconnect-jsonserver/users'),
     );
 
     if (response.statusCode == 200) {
