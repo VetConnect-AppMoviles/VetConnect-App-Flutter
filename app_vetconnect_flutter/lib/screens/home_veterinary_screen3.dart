@@ -1,79 +1,72 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:app_vetconnect_flutter/widgets/home_veterinary_appbar.dart';
-import 'package:app_vetconnect_flutter/widgets/vet_clinic_card.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert'; // Para usar jsonEncode
+import '../widgets/home_veterinary_appbar.dart';
+import '../widgets/vet_clinic_card.dart';
 
 class HomeVeterinaryScreen3 extends StatefulWidget {
-  final String service;  // Recibimos el parámetro de servicio
-  final String time;     // Recibimos el parámetro de hora
+  final String service;
+  final String time;
 
-  const HomeVeterinaryScreen3({
-    super.key,
-    required this.service,
-    required this.time,
-  });
+  const HomeVeterinaryScreen3({super.key, required this.service, required this.time});
 
   @override
-  State<HomeVeterinaryScreen3> createState() => _HomeVeterinaryScreen3State();
+  _HomeVeterinaryScreen3State createState() => _HomeVeterinaryScreen3State();
 }
 
 class _HomeVeterinaryScreen3State extends State<HomeVeterinaryScreen3> {
-  final TextEditingController _additionalInfoController = TextEditingController(); // Controlador para capturar la información adicional
-  Map<String, dynamic>? bookingInfo; // Para guardar la información del booking
+  Map<String, dynamic>? vetCenter;
+  Map<String, dynamic>? bookingInfo;
 
-  // Método para hacer el GET de bookings
-  Future<void> _fetchBookingInfo() async {
-    try {
-      final url = Uri.parse('https://my-json-server.typicode.com/RodrLH/vetconnect-jsonserver/bookings');
-      final response = await http.get(url);
+  @override
+  void initState() {
+    super.initState();
+    fetchVetCenter();
+    _fetchBookingInfo();
+  }
 
-      if (response.statusCode == 200) {
-        final List<dynamic> bookings = jsonDecode(response.body); // Parsear la respuesta
-        if (bookings.isNotEmpty) {
-          setState(() {
-            bookingInfo = bookings.first; // Tomar la primera reserva como ejemplo
-          });
-        }
-      } else {
-        print('Error al obtener la información de las reservas: ${response.body}');
-      }
-    } catch (error) {
-      print('Error de red o de servidor: $error');
+  Future<void> fetchVetCenter() async {
+    final response = await http.get(Uri.parse('https://my-json-server.typicode.com/RodrLH/vetconnect-jsonserver/vet-centers/1'));
+
+    if (response.statusCode == 200) {
+      setState(() {
+        vetCenter = json.decode(response.body);
+      });
+    } else {
+      throw Exception('Failed to load vet center');
     }
   }
 
-  // Método para hacer el POST (confirmación de reserva)
+  Future<void> _fetchBookingInfo() async {
+    // Simulate fetching booking info
+    await Future.delayed(const Duration(seconds: 1));
+    setState(() {
+      bookingInfo = {
+        'serviceType': widget.service,
+        'bookingDetails': {
+          'appointmentDateTime': widget.time,
+          'additionalInfo': 'Ninguna',
+        },
+        'price': '100',
+      };
+    });
+  }
+
   Future<void> _confirmBooking() async {
-    // Convertir la fecha y hora en formato ISO 8601
-    final String dateTimeISO = DateTime.now().toIso8601String(); // Hora actual en formato ISO
-
-    // Crear los datos del booking
-    final bookingData = {
-      "petOwnerId": 2, // ID del dueño (puedes cambiarlo dinámicamente)
-      "vetCenterId": 1, // ID del centro veterinario (puedes cambiarlo dinámicamente)
-      "serviceType": widget.service.toUpperCase(), // Convertir el servicio a mayúsculas
-      "bookingDetails": {
-        "appointmentDateTime": dateTimeISO, // Usar la hora actual
-        "additionalInfo": _additionalInfoController.text // Información adicional escrita por el usuario
-      },
-      "price": 60, // Precio fijo, puedes cambiarlo si es necesario
-      "bookingDate": dateTimeISO, // Fecha de la reserva en formato ISO
-    };
-
     try {
-      // Hacer el POST al servidor
-      final url = Uri.parse('https://my-json-server.typicode.com/RodrLH/vetconnect-jsonserver/bookings');
       final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(bookingData),
+        Uri.parse('http://localhost:3000/bookings'),
+        body: json.encode({
+          'serviceType': widget.service,
+          'appointmentDateTime': widget.time,
+          'additionalInfo': 'Ninguna',
+          'price': '100',
+        }),
       );
 
-      // Verificar si el POST fue exitoso
       if (response.statusCode == 201 || response.statusCode == 200) {
         print('Reserva confirmada exitosamente');
-        Navigator.pushNamed(context, '/payment'); // Navegar a la pantalla de pago
+        Navigator.pushNamed(context, '/payment');
       } else {
         print('Error al confirmar la reserva: ${response.body}');
         _showErrorDialog('Error al confirmar la reserva, intenta de nuevo.');
@@ -84,7 +77,6 @@ class _HomeVeterinaryScreen3State extends State<HomeVeterinaryScreen3> {
     }
   }
 
-  // Método para mostrar un diálogo de error
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -95,7 +87,7 @@ class _HomeVeterinaryScreen3State extends State<HomeVeterinaryScreen3> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Cerrar el diálogo
+                Navigator.of(context).pop();
               },
               child: const Text('Cerrar'),
             ),
@@ -106,26 +98,19 @@ class _HomeVeterinaryScreen3State extends State<HomeVeterinaryScreen3> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _fetchBookingInfo(); // Llamar para obtener la información de bookings
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: HomeVeterinaryAppBar(),
-      body: SingleChildScrollView(
+      body: vetCenter == null
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Mostrar la tarjeta de la clínica
-              const VetClinicCard(),
+              VetClinicCard(vetCenter: vetCenter!),
               const SizedBox(height: 16),
-
-              // Aquí empieza la información dinámica de "ServiceInformationCard"
               Container(
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
@@ -142,7 +127,6 @@ class _HomeVeterinaryScreen3State extends State<HomeVeterinaryScreen3> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Título
                     const Text(
                       'Información del Servicio',
                       style: TextStyle(
@@ -152,69 +136,51 @@ class _HomeVeterinaryScreen3State extends State<HomeVeterinaryScreen3> {
                       ),
                     ),
                     const SizedBox(height: 16),
-
-                    // Información del servicio y hora seleccionada
                     if (bookingInfo != null) ...[
-                      // Mostrar los datos obtenidos de bookings
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Servicio:', style: TextStyle(fontSize: 16)),
                           Text(bookingInfo!['serviceType'],
-                              style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold)),
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ],
                       ),
                       const SizedBox(height: 8),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Fecha y Hora:', style: TextStyle(fontSize: 16)),
                           Text(bookingInfo!['bookingDetails']['appointmentDateTime'],
-                              style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold)),
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ],
                       ),
                       const SizedBox(height: 8),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Información adicional:', style: TextStyle(fontSize: 16)),
                           Text(bookingInfo!['bookingDetails']['additionalInfo'],
-                              style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold)),
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ],
                       ),
                       const SizedBox(height: 8),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Precio:', style: TextStyle(fontSize: 16)),
                           Text('S/. ${bookingInfo!['price']}',
-                              style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold)),
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ] else ...[
-                      const Center(child: CircularProgressIndicator()), // Mostrar un indicador de carga
+                      const Center(child: CircularProgressIndicator()),
                     ],
-
                     const SizedBox(height: 16),
-
-                    // Botón de confirmación
                     ElevatedButton(
-                      onPressed: _confirmBooking, // Llamar al método de confirmación
+                      onPressed: _confirmBooking,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
