@@ -32,7 +32,7 @@ class VetConnectApp extends StatelessWidget {
         '/payment': (context) => const PaymentScreen(),
         '/home': (context) => HomeVeterinaryScreen(),
         '/veterinary': (context) =>const  VeterinaryConfig(),
-        '/home2': (context) => const HomeVeterinaryScreen2(),
+        '/home2': (context) =>  const HomeVeterinaryScreen2(),
         '/calendar': (context) => const CalendarView(),
         '/terminos': (context) => const TerminosPage(),
         '/myhome': (context) => const MyHomePage(),
