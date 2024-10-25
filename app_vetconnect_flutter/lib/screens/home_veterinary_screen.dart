@@ -1,8 +1,9 @@
-import 'package:app_vetconnect_flutter/widgets/vet_clinic_card.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../widgets/home_veterinary_appbar.dart';
-import 'home_veterinary_screen3.dart'; // Asegúrate de importar HomeVeterinaryScreen3
-
+import '../widgets/vet_clinic_card.dart';
+import 'home_veterinary_screen3.dart';
 class HomeVeterinaryScreen extends StatefulWidget {
   @override
   _HomeVeterinaryScreenState createState() => _HomeVeterinaryScreenState();
@@ -11,21 +12,40 @@ class HomeVeterinaryScreen extends StatefulWidget {
 class _HomeVeterinaryScreenState extends State<HomeVeterinaryScreen> {
   String? _selectedService;
   List<String> services = ['Consulta', 'Baño', 'Vacunación'];
+  Map<String, dynamic>? vetCenter;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchVetCenter();
+  }
+
+  Future<void> fetchVetCenter() async {
+    final response = await http.get(Uri.parse('https://my-json-server.typicode.com/RodrLH/vetconnect-jsonserver/vet-centers/1'));
+
+    if (response.statusCode == 200) {
+      setState(() {
+        vetCenter = json.decode(response.body);
+      });
+    } else {
+      throw Exception('Failed to load vet center');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: HomeVeterinaryAppBar(),
-      body: SingleChildScrollView(
+      body: vetCenter == null
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              // Botones Pequeños Amarillos
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // Botón de Servicios con Dropdown
                   SizedBox(
                     width: 100,
                     height: 30,
@@ -44,18 +64,14 @@ class _HomeVeterinaryScreenState extends State<HomeVeterinaryScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            _selectedService ?? 'Checkup',
-                            style: const TextStyle(
-                                fontSize: 10, color: Colors.black),
+                            _selectedService ?? 'Consulta',
+                            style: const TextStyle(fontSize: 10, color: Colors.black),
                           ),
-                          const Icon(Icons.arrow_drop_down,
-                              color: Colors.black),
+                          const Icon(Icons.arrow_drop_down, color: Colors.black),
                         ],
                       ),
                     ),
                   ),
-
-                  // Botón de Ubicación
                   SizedBox(
                     width: 100,
                     height: 30,
@@ -70,24 +86,25 @@ class _HomeVeterinaryScreenState extends State<HomeVeterinaryScreen> {
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                       ),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
-                        Text(
-                          'Ubicación',
-                          style: TextStyle(fontSize: 10, color: Colors.black),
-                        ),
-                      ]),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text(
+                            'Ubicación',
+                            style: TextStyle(fontSize: 10, color: Colors.black),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
-
-              // VeterinaryImageContainer
-              VetClinicCard(),
-
-              // Espacio entre los widgets
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: () => Navigator.pushNamed(context, '/home2'),
+                child: VetClinicCard(vetCenter: vetCenter!),
+              ),
               const SizedBox(height: 20),
-
-              // Horarios con GridView
               Container(
                 margin: const EdgeInsets.all(12.0),
                 padding: const EdgeInsets.all(12.0),
@@ -113,7 +130,6 @@ class _HomeVeterinaryScreenState extends State<HomeVeterinaryScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    // Horarios
                     GridView.count(
                       crossAxisCount: 3,
                       shrinkWrap: true,
@@ -135,8 +151,6 @@ class _HomeVeterinaryScreenState extends State<HomeVeterinaryScreen> {
                   ],
                 ),
               ),
-
-              // Imagen de la veterinaria
               const SizedBox(height: 20),
               ClipRRect(
                 borderRadius: BorderRadius.circular(15),
@@ -154,7 +168,6 @@ class _HomeVeterinaryScreenState extends State<HomeVeterinaryScreen> {
     );
   }
 
-  // Función para mostrar el menú desplegable de servicios
   void _showServiceDropdown(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -180,12 +193,10 @@ class _HomeVeterinaryScreenState extends State<HomeVeterinaryScreen> {
     );
   }
 
-  // Función para crear TimeSlot y pasar hora y servicio a la próxima pantalla
   Widget _buildTimeSlot(BuildContext context, String time, bool isAvailable) {
     return GestureDetector(
       onTap: isAvailable
           ? () {
-        // Navegar a HomeVeterinaryScreen3 y pasar la hora y el servicio seleccionado
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -196,19 +207,15 @@ class _HomeVeterinaryScreenState extends State<HomeVeterinaryScreen> {
           ),
         );
       }
-          : null, // Si no está disponible, no hace nada
+          : null,
       child: Container(
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(vertical: 4.0),
         decoration: BoxDecoration(
-          color: isAvailable
-              ? Colors.lightGreenAccent.withOpacity(0.2)
-              : Colors.grey.withOpacity(0.3),
+          color: isAvailable ? Colors.lightGreenAccent.withOpacity(0.2) : Colors.grey.withOpacity(0.3),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isAvailable
-                ? Colors.lightGreenAccent.withOpacity(0.5)
-                : Colors.grey.withOpacity(0.5),
+            color: isAvailable ? Colors.lightGreenAccent.withOpacity(0.5) : Colors.grey.withOpacity(0.5),
           ),
         ),
         child: Text(
