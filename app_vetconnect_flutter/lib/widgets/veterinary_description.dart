@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class VeterinaryDescription extends StatelessWidget {
-  const VeterinaryDescription({super.key});
+  final String description;
+
+  const VeterinaryDescription({super.key, required this.description});
 
   @override
   Widget build(BuildContext context) {
@@ -20,26 +22,19 @@ class VeterinaryDescription extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text(
-            'Descripción del Perfil',
+        children: [
+          const Text(
+            'Descripcion del Perfil',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.orange,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec volutpat '
-                'est ut purus euismod, nec varius turpis eleifend. Nunc augue metus.',
-            style: TextStyle(fontSize: 16, color: Colors.black),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec volutpat '
-                'est ut purus euismod, nec varius turpis eleifend. Nunc augue metus.',
-            style: TextStyle(fontSize: 16, color: Colors.black),
+            description,
+            style: const TextStyle(fontSize: 16, color: Colors.black),
           ),
         ],
       ),
