@@ -37,7 +37,7 @@ class VetConnectApp extends StatelessWidget {
         '/terminos': (context) => const TerminosPage(),
         '/myhome': (context) => const MyHomePage(),
         '/perfil': (context) => const PerfilScreen(),
-        '/config': (context) => const ConfigPerfilEmpresaApp(),
+        '/config': (context) =>  ConfigPerfilEmpresa(),
         '/addservice': (context) => const AddServiceScreen(),
         '/transaction': (context) => const TransactionMobileApp(),
       },

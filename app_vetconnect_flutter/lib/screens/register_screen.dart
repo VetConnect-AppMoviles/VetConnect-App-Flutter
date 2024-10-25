@@ -63,7 +63,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (response.statusCode == 201) {
       print('User Registered: ${nameController.text}');
-      Navigator.pushNamed(context, '/home');
+      Navigator.pushNamed(context, '/config');
     } else {
       print('Failed to register user');
     }

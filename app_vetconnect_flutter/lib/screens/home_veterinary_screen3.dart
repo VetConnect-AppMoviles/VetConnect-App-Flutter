@@ -55,7 +55,7 @@ class _HomeVeterinaryScreen3State extends State<HomeVeterinaryScreen3> {
   Future<void> _confirmBooking() async {
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/bookings'),
+        Uri.parse('https://my-json-server.typicode.com/RodrLH/vetconnect-jsonserver/bookings'),
         body: json.encode({
           'serviceType': widget.service,
           'appointmentDateTime': widget.time,

@@ -24,7 +24,7 @@ class VeterinaryDescription extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Descripcion del Perfil',
+            'Descripción del Perfil',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,

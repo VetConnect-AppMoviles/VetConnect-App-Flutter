@@ -218,8 +218,25 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               _buildTextField(
                                 'CARD NUMBER',
                                 cardNumberController,
-                                borderColor: const Color(
-                                    0xFF54D6B6), // Color del borde verde
+                                borderColor: const Color(0xFF54D6B6),
+                                validator: CreditCardValidator.validate,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  LengthLimitingTextInputFormatter(19),
+                                  TextInputFormatter.withFunction((oldValue, newValue) {
+                                    if (newValue.text.length > oldValue.text.length) {
+                                      if (newValue.text.length == 4 ||
+                                          newValue.text.length == 9 ||
+                                          newValue.text.length == 14) {
+                                        return TextEditingValue(
+                                          text: '${newValue.text} ',
+                                          selection: TextSelection.collapsed(offset: newValue.selection.end + 1),
+                                        );
+                                      }
+                                    }
+                                    return newValue;
+                                  }),
+                                ],
                               ),
                               const SizedBox(height: 16),
                               Row(
@@ -470,7 +487,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               Center(
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    Navigator.pushNamed(context, '/home');
+                                    Navigator.pushNamed(context, '/calendar');
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFFFFF3E0),
@@ -485,7 +502,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                     ),
                                   ),
                                   child: const Text(
-                                    'Regresar al Inicio',
+                                    'Ir al calendario',
                                     style: TextStyle(
                                       color: Color(0xFF664617),
                                       fontSize: 15,
@@ -549,6 +566,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 width: 2,
               ),
             ),
+            errorText:  validator != null ? validator(controller.text) : null,
           ),
           onTap: () {
             focusNode.requestFocus();
@@ -609,6 +627,39 @@ class ExpirationDateValidator {
   }
 }
 
+class CreditCardValidator {
+  static String? validate(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'El número de tarjeta es requerido';
+    }
+
+    value = value.replaceAll(RegExp(r'\s+|-'), '');
+
+    if (value.length < 13 || value.length > 19) {
+      return 'Número de tarjeta no válido';
+    }
+
+    int sum = 0;
+    bool alternate = false;
+    for (int i = value.length - 1; i >= 0; i--) {
+      int n = int.parse(value[i]);
+      if (alternate) {
+        n *= 2;
+        if (n > 9) {
+          n -= 9;
+        }
+      }
+      sum += n;
+      alternate = !alternate;
+    }
+
+    if (sum % 10 != 0) {
+      return 'Número de tarjeta no válido';
+    }
+
+    return null;
+  }
+}
 
 
 
