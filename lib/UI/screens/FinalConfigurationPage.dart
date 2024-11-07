@@ -31,6 +31,8 @@ class _FinalConfigurationPageState extends State<FinalConfigurationPage> {
   final TextEditingController locationController = TextEditingController();
   final TextEditingController samplePhotosController = TextEditingController();
   final TextEditingController hoursController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController photoController = TextEditingController();
   List<Map<String, dynamic>> services = [];
   List<TextEditingController> serviceNameControllers = [];
   List<TextEditingController> servicePriceControllers = [];
@@ -87,6 +89,29 @@ class _FinalConfigurationPageState extends State<FinalConfigurationPage> {
       Navigator.pushNamed(context, '/home');
     } else {
       print('Failed to submit vet center details');
+    }
+  }
+
+  Future<void> _submitPetOwnerDetails() async {
+    final Map<String, dynamic> petOwnerDetails = {
+      'id': 0,
+      'userId': widget.userId,
+      'photo': photoController.text,
+      'address': addressController.text,
+      'phone': widget.phone,
+    };
+
+    final response = await http.post(
+      Uri.parse('https://resilient-contentment-production.up.railway.app/api/pet-owners'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(petOwnerDetails),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      print('Pet Owner Details Submitted');
+      Navigator.pushNamed(context, '/home');
+    } else {
+      print('Failed to submit pet owner details');
     }
   }
 
@@ -222,6 +247,35 @@ class _FinalConfigurationPageState extends State<FinalConfigurationPage> {
                         const SizedBox(height: 32),
                         ElevatedButton(
                           onPressed: _submitVetCenterDetails,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF67DBBE),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 25),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text(
+                            'Submit',
+                            style: TextStyle(
+                              color: Color(0xFF193D30),
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ] else if (widget.roleId == 2) ...[
+                        CustomTextField(
+                          label: 'Photo URL',
+                          controller: photoController,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          label: 'Address',
+                          controller: addressController,
+                        ),
+                        const SizedBox(height: 32),
+                        ElevatedButton(
+                          onPressed: _submitPetOwnerDetails,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF67DBBE),
                             padding: const EdgeInsets.symmetric(
