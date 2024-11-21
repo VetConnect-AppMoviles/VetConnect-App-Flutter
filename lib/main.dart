@@ -9,6 +9,7 @@ import 'UI/widgets/CustomNavBar.dart';
 import 'UI/widgets/CustomAppBar.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -28,7 +29,7 @@ class _MyAppState extends State<MyApp> {
     const HomePage(),
     const SearchPage(),
     const CalendarPage(),
-    ProfilePage(userData: _currentUser),
+    const ProfilePage(),
   ];
 
   void _onTabChange(int index) {
