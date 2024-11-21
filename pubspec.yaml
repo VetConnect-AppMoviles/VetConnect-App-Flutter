@@ -30,6 +30,9 @@ environment:
 dependencies:
   http: ^0.13.3
   intl: ^0.17.0
+  shared_preferences: ^2.3.3
+  image_picker: ^0.8.4+4
+  google_maps_flutter: ^2.10.0
   flutter:
     sdk: flutter
 

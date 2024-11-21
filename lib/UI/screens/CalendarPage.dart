@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/CustomAppBar.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -12,16 +13,49 @@ class _CalendarPageState extends State<CalendarPage> {
   int _currentPage = 0;
 
   final List<Map<String, dynamic>> events = [
-    {'title': 'Chequeo', 'day': 'Mon', 'time': '11:30 am', 'date': '02', 'type': 'chequeo'},
-    {'title': 'Chequeo', 'day': 'Tues', 'time': '09:00 am', 'date': '03', 'type': 'chequeo'},
-    {'title': 'Chequeo', 'day': 'Wed', 'time': '11:30 am', 'date': '04', 'type': 'chequeo'},
-    {'title': 'Service', 'day': 'Wed', 'time': '14:00 pm', 'date': '04', 'type': 'service'},
-    {'title': 'Service', 'day': 'Wed', 'time': '15:30 pm', 'date': '04', 'type': 'service'},
+    {
+      'title': 'Chequeo',
+      'day': 'Mon',
+      'time': '11:30 am',
+      'date': '02',
+      'type': 'chequeo'
+    },
+    {
+      'title': 'Chequeo',
+      'day': 'Tues',
+      'time': '09:00 am',
+      'date': '03',
+      'type': 'chequeo'
+    },
+    {
+      'title': 'Chequeo',
+      'day': 'Wed',
+      'time': '11:30 am',
+      'date': '04',
+      'type': 'chequeo'
+    },
+    {
+      'title': 'Service',
+      'day': 'Wed',
+      'time': '14:00 pm',
+      'date': '04',
+      'type': 'service'
+    },
+    {
+      'title': 'Service',
+      'day': 'Wed',
+      'time': '15:30 pm',
+      'date': '04',
+      'type': 'service'
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppBar(onBackButtonPressed: () {
+        Navigator.pop(context);
+      }),
       backgroundColor: const Color(0xFFF9F9F9),
       body: Column(
         children: [
@@ -55,7 +89,8 @@ class _CalendarPageState extends State<CalendarPage> {
         Expanded(
           child: SingleChildScrollView(
             child: Column(
-              children: List.generate(13, (index) => _buildHourRow(index + 6, pageIndex)),
+              children: List.generate(
+                  13, (index) => _buildHourRow(index + 6, pageIndex)),
             ),
           ),
         ),
@@ -117,7 +152,8 @@ class _CalendarPageState extends State<CalendarPage> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: List.generate(3, (index) {
-                final day = ['Mon', 'Tues', 'Wed', 'Thu', 'Fri', 'Sat'][(index % 6)];
+                final day =
+                    ['Mon', 'Tues', 'Wed', 'Thu', 'Fri', 'Sat'][(index % 6)];
                 return Expanded(
                   child: _buildTimeSlot(hour, day),
                 );
@@ -140,7 +176,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Widget _buildEventIfExists(int hour, String day) {
     final event = events.firstWhere(
-          (e) => e['day'] == day && int.parse(e['time'].split(':')[0]) == hour,
+      (e) => e['day'] == day && int.parse(e['time'].split(':')[0]) == hour,
       orElse: () => {},
     );
 
@@ -249,19 +285,19 @@ class _CalendarPageState extends State<CalendarPage> {
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
+                  backgroundColor: Colors.green,
                   minimumSize: const Size(double.infinity, 40),
                 ),
-                child: const Text('Cancelar cita'),
+                child: const Text('Aceptar'),
               ),
               const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: Colors.red,
                   minimumSize: const Size(double.infinity, 40),
                 ),
-                child: const Text('Aceptar'),
+                child: const Text('Cerrar'),
               ),
             ],
           ),

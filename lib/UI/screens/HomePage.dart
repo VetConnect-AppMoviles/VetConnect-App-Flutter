@@ -39,91 +39,88 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: _vetCenters.length,
-                itemBuilder: (context, index) {
-                  final vetCenter = _vetCenters[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => VetInfoPage(vetCenter: vetCenter),
+        child: ListView.builder(
+          itemCount: _vetCenters.length + 1,
+          itemBuilder: (context, index) {
+            if (index == _vetCenters.length) {
+              return Center(
+                child: Image.asset(
+                  'assets/images/pet_insurrance.png',
+                  height: 200,
+                ),
+              );
+            }
+
+            final vetCenter = _vetCenters[index];
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VetInfoPage(vetCenter: vetCenter),
+                  ),
+                );
+              },
+              child: SizedBox(
+                width: double.infinity,
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Clínica Veterinaria - ${vetCenter['name']}',
+                          style: const TextStyle(
+                            color: Color(0xFF003333),
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      );
-                    },
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Clínica Veterinaria - ${vetCenter['name']}',
-                                style: const TextStyle(
-                                  color: Color(0xFF003333),
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12.0),
+                              child: Image.network(
+                                vetCenter['imageProfile'],
+                                height: 100,
+                                fit: BoxFit.contain,
                               ),
-                              const SizedBox(height: 12),
-                              Row(
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    child: Image.network(
-                                      vetCenter['imageProfile'],
-                                      height: 100,
-                                      fit: BoxFit.contain,
+                                  const Text(
+                                    'Dirección:',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          'Dirección:',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(
-                                          vetCenter['location'],
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ],
+                                  Text(
+                                    vetCenter['location'],
+                                    style: const TextStyle(
+                                      fontSize: 16,
                                     ),
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ),
+                      ],
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
-            ),
-            Center(
-              child: Image.asset(
-                'assets/images/pet_insurrance.png',
-                height: 200,
-              ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

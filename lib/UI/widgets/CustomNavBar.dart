@@ -38,8 +38,8 @@ class CustomNavBar extends StatelessWidget {
               text: 'Buscar',
             ),
             GButton(
-              icon: Icons.calendar_month,
-              text: 'Consultas',
+              icon: Icons.map,
+              text: 'Mapa',
             ),
             GButton(
               icon: Icons.person,

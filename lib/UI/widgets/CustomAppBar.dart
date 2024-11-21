@@ -1,3 +1,4 @@
+import 'package:app_vetconnect/UI/screens/CalendarPage.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/T&CPage.dart';
@@ -34,7 +35,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             onSelected: (String result) {
               switch (result) {
                 case 'Mis Citas':
-                  // Navigate to Mis Citas page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CalendarPage(),
+                    ),
+                  );
                   break;
                 case 'FAQ & T&C':
                   Navigator.push(

@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -12,6 +14,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   Map<String, dynamic> _userData = {};
+  final ImagePicker _picker = ImagePicker();
+  XFile? _imageFile;
 
   @override
   void initState() {
@@ -25,6 +29,15 @@ class _ProfilePageState extends State<ProfilePage> {
     if (userDataString != null) {
       setState(() {
         _userData = json.decode(userDataString);
+      });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = pickedFile;
       });
     }
   }
@@ -54,25 +67,34 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundColor: Colors.teal.shade100,
-                            backgroundImage: _userData['photo'] != null
-                                ? NetworkImage(_userData['photo'])
-                                : null,
-                            child: _userData['photo'] == null
-                                ? const Icon(Icons.person,
-                                    size: 50, color: Colors.teal)
-                                : null,
+                          GestureDetector(
+                            onTap: _pickImage,
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundColor: Colors.teal.shade100,
+                              backgroundImage: _imageFile != null
+                                  ? FileImage(File(_imageFile!.path))
+                                  : _userData['photo'] != null
+                                      ? NetworkImage(_userData['photo'])
+                                      : null,
+                              child: _imageFile == null && _userData['photo'] == null
+                                  ? const Icon(Icons.person, size: 50, color: Colors.teal)
+                                  : null,
+                            ),
                           ),
                           const SizedBox(height: 16),
-                          _buildInfoRow('name', _userData['name'] ?? 'N/A'),
+                          ElevatedButton(
+                            onPressed: _pickImage,
+                            child: const Text('Cambiar imagen de perfil'),
+                          ),
+                          const SizedBox(height: 16),
+                          _buildInfoRow('Nombre', _userData['name'] ?? 'N/A'),
                           const SizedBox(height: 8),
-                          _buildInfoRow('email', _userData['email'] ?? 'N/A'),
+                          _buildInfoRow('Correo Electrónico', _userData['email'] ?? 'N/A'),
                           const SizedBox(height: 8),
-                          _buildInfoRow('phone', _userData['phone'] ?? 'N/A'),
+                          _buildInfoRow('Teléfono', _userData['phone'] ?? 'N/A'),
                           const SizedBox(height: 8),
-                          _buildInfoRow('accountType', accountType)
+                          _buildInfoRow('Tipo de Cuenta', accountType)
                         ],
                       ),
                     ),
@@ -183,18 +205,18 @@ class _ProfilePageState extends State<ProfilePage> {
     return await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Confirm Deletion'),
+            title: const Text('Confirmar eliminación'),
             content: const Text(
-                'Are you sure you want to delete your account? This action cannot be undone.'),
+                '¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel'),
+                child: const Text('Cancelar'),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: const Text('Delete'),
+                child: const Text('Eliminar'),
               ),
             ],
           ),

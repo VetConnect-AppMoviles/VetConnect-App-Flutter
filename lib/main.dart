@@ -7,6 +7,7 @@ import 'UI/screens/CalendarPage.dart';
 import 'UI/screens/ProfilePage.dart';
 import 'UI/widgets/CustomNavBar.dart';
 import 'UI/widgets/CustomAppBar.dart';
+import 'UI/screens/map_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +29,7 @@ class _MyAppState extends State<MyApp> {
   List<Widget> get _pages => [
     const HomePage(),
     const SearchPage(),
-    const CalendarPage(),
+    MapView(),
     const ProfilePage(),
   ];
 
