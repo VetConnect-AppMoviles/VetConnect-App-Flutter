@@ -1,22 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ProfilePage extends StatefulWidget {
-  final Map<String, dynamic> userData;
-
-  const ProfilePage({super.key, required this.userData});
+  const ProfilePage({super.key});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  late Map<String, dynamic> _userData;
+  Map<String, dynamic> _userData = {};
 
   @override
   void initState() {
     super.initState();
-    _userData = Map.from(widget.userData);
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? userDataString = prefs.getString('userDataS');
+    if (userDataString != null) {
+      setState(() {
+        _userData = json.decode(userDataString);
+      });
+    }
   }
 
   @override
