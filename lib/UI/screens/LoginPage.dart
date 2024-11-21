@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/CustomTextField.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -28,6 +29,11 @@ class LoginScreen extends StatelessWidget {
       if (user != null) {
         print('Login Successful: ${user['name']}');
         onLogin(user);
+
+        // Save user data to SharedPreferences
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userDataS', json.encode(user));
+
         Navigator.pushNamed(context, '/home');
       } else {
         print('Invalid email or password');
