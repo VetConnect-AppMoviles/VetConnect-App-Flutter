@@ -210,9 +210,9 @@ class VetInfoPage extends StatelessWidget {
                                           color: Color(0xFF003333),
                                         ),
                                       ),
-                                      TextSpan(
+                                      const TextSpan(
                                         text: 'Precio: ',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
                                           color: Color(0xFF003333),

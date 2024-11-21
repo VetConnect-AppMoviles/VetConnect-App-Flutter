@@ -15,7 +15,7 @@ class LoginScreen extends StatelessWidget {
     final String password = passwordController.text;
 
     final response = await http.get(
-      Uri.parse('https://resilient-contentment-production.up.railway.app/api/users'),
+      Uri.parse('http://vetconnect-backend-production.up.railway.app/api/users'),
     );
 
     if (response.statusCode == 200) {

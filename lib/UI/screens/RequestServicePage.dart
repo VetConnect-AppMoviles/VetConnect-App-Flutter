@@ -25,7 +25,7 @@ class RequestServicePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Clinic Info Card
-                Container(
+                SizedBox(
                   width: double.infinity,
                   child: Card(
                     color: const Color(0xFFFFFFFF),
@@ -87,7 +87,7 @@ class RequestServicePage extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // Service Info Card
-                Container(
+                SizedBox(
                   width: double.infinity,
                   child: Card(
                     color: const Color(0xFFFFFFFF),

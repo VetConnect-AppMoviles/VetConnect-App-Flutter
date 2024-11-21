@@ -26,7 +26,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> _fetchVeterinaryClinics() async {
     final response = await http.get(
-      Uri.parse('https://resilient-contentment-production.up.railway.app/api/vet-centers'),
+      Uri.parse('http://vetconnect-backend-production.up.railway.app/api/vet-centers'),
     );
 
     if (response.statusCode == 200) {
@@ -86,7 +86,7 @@ class _SearchPageState extends State<SearchPage> {
                 itemCount: _filteredClinics.length,
                 itemBuilder: (context, index) {
                   final clinic = _filteredClinics[index];
-                  return Container(
+                  return SizedBox(
                     width: double.infinity,
                     child: Card(
                       color: const Color(0xFFFFF2E0),

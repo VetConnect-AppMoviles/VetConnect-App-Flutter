@@ -1,8 +1,10 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../widgets/CustomTextField.dart';
 import 'FinalConfigurationPage.dart';
+import 'TermsConditions.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function(Map<String, dynamic>) onRegister;
@@ -21,6 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController phoneController = TextEditingController();
 
   bool isClientSelected = true;
+  bool isTCAccepted = false;
 
   Future<void> _registerUser() async {
     if (nameController.text.isEmpty ||
@@ -41,6 +44,13 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
+    if (!isTCAccepted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You must accept the Terms and Conditions')),
+      );
+      return;
+    }
+
     final int roleId = isClientSelected ? 2 : 1;
     final Map<String, dynamic> user = {
       'id': 0,
@@ -52,7 +62,7 @@ class _RegisterPageState extends State<RegisterPage> {
     };
 
     final response = await http.post(
-      Uri.parse('https://resilient-contentment-production.up.railway.app/api/users'),
+      Uri.parse('https://vetconnect-backend-production.up.railway.app/api/users'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(user),
     );
@@ -226,6 +236,46 @@ class _RegisterPageState extends State<RegisterPage> {
                         label: 'Confirm Password',
                         controller: confirmPasswordController,
                         obscureText: true,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: isTCAccepted,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                isTCAccepted = value ?? false;
+                              });
+                            },
+                          ),
+                          Expanded(
+                            child: RichText(
+                              text: TextSpan(
+                                text: 'Acepto los ',
+                                style: const TextStyle(fontSize: 14, color: Colors.black),
+                                children: [
+                                  TextSpan(
+                                    text: 'Términos y Condiciones',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.blue,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => TermsConditions(),
+                                          ),
+                                        );
+                                      },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 32),
                       ElevatedButton(

@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _fetchVeterinaryClinics() async {
     final response = await http.get(
-      Uri.parse('https://resilient-contentment-production.up.railway.app/api/vet-centers'),
+      Uri.parse('http://vetconnect-backend-production.up.railway.app/api/vet-centers'),
     );
 
     if (response.statusCode == 200) {

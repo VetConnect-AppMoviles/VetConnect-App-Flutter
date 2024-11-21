@@ -79,7 +79,7 @@ class _FinalConfigurationPageState extends State<FinalConfigurationPage> {
     };
 
     final response = await http.post(
-      Uri.parse('https://resilient-contentment-production.up.railway.app/api/vet-centers'),
+      Uri.parse('https://vetconnect-backend-production.up.railway.app/api/vet-centers'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(vetCenterDetails),
     );
@@ -102,7 +102,7 @@ class _FinalConfigurationPageState extends State<FinalConfigurationPage> {
     };
 
     final response = await http.post(
-      Uri.parse('https://resilient-contentment-production.up.railway.app/api/pet-owners'),
+      Uri.parse('https://vetconnect-backend-production.up.railway.app/api/pet-owners'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(petOwnerDetails),
     );

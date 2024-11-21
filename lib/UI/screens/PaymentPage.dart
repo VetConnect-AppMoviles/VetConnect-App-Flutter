@@ -584,7 +584,7 @@ class ExpirationDateFormatter extends TextInputFormatter {
     }
 
     if (newText.length >= 3) {
-      newText = newText.substring(0, 2) + '/' + newText.substring(2);
+      newText = '${newText.substring(0, 2)}/${newText.substring(2)}';
     }
 
     return newValue.copyWith(
